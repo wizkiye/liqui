@@ -4,6 +4,8 @@ iOS-styled liquid sheets and buttons for Flutter with elegant spring animations.
 
 [![pub package](https://img.shields.io/badge/pub-0.1.0-blue)](https://pub.dev/packages/liqui)
 
+![Demo](assets/demo.gif)
+
 ## Features
 
 - **Liquid Bottom Sheets**: Smooth, spring-animated bottom sheets with iOS-style feel

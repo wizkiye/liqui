@@ -13,13 +13,14 @@ class LiquiCircleButtonGroup extends StatelessWidget {
     const buttonSize = 32 * 1.375;
     return LiquiScaleTap(
       onPressed: () {},
-      child: Container(
+      child: DecoratedBox(
         decoration: BoxDecoration(
           borderRadius: const .all(.circular(99)),
           color: backgroundColor ?? CupertinoColors.label.withAlpha(8),
           boxShadow: const [BoxShadow(color: Color.fromRGBO(0, 0, 0, 0.05), blurRadius: 12, offset: Offset(0, 4))],
         ),
         child: Row(
+          mainAxisSize: .min,
           children: [
             for (final button in buttons)
               SizedBox(
