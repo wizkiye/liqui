@@ -431,7 +431,10 @@ class _CustomBottomSheetWrapperState extends State<CustomBottomSheetWrapper> wit
               autoScaleBySize: false,
               child: ClipRSuperellipse(
                 clipper: widget.enablePopoverEffect ? AnimatedRadiusClipper(widget.routeAnimation, radius) : null,
-                borderRadius: .circular(radius),
+                borderRadius: .vertical(
+                  top: .circular(radius),
+                  bottom: widget.enablePopoverEffect || isTablet ? .circular(radius) : .zero,
+                ),
                 child: () {
                   final content = ConstrainedBox(
                     constraints: BoxConstraints(maxHeight: screenHeight * 0.9),

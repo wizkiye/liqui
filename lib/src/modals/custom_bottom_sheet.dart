@@ -4,9 +4,9 @@ import 'dart:math';
 import 'package:elegant_spring_animation/elegant_spring_animation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/physics.dart';
+import 'package:liqui/src/cache/screen_corner_radius_cache.dart';
 import 'package:liqui/src/modals/custom_bottom_sheet_wrapper.dart';
 import 'package:liqui/src/modals/menu_option.dart';
-import 'package:screen_corner_radius/screen_corner_radius.dart';
 
 /// Configuration constants for the custom bottom sheet
 class BottomSheetConfig {
@@ -43,9 +43,6 @@ class BottomSheetConfig {
 
   /// Edge padding for the bottom sheet container
   static const double edgePadding = 8.0;
-
-  /// Adjustment value for corner radius calculations
-  static const double cornerRadiusAdjustment = 8.0;
 
   // Spring Physics
   /// Mass parameter for the spring animation (affects inertia)
@@ -199,8 +196,9 @@ class CustomBottomSheetRoute<T> extends ModalRoute<T> {
   final double screenCornerRadius;
   final CustomBottomSheetController sheetController;
   final bool enablePopoverEffect;
-  BuildContext? sourceContext;
+  final BuildContext sourceContext;
   final double? width;
+  final Offset? popoverPosition;
 
   CustomBottomSheetRoute({
     required this.builder,
@@ -209,8 +207,9 @@ class CustomBottomSheetRoute<T> extends ModalRoute<T> {
     required this.enableDrag,
     required this.screenCornerRadius,
     required this.sheetController,
+    this.popoverPosition,
     this.enablePopoverEffect = false,
-    this.sourceContext,
+    required this.sourceContext,
     this.width,
   });
 
@@ -264,20 +263,28 @@ class CustomBottomSheetRoute<T> extends ModalRoute<T> {
     return super.didPop(result);
   }
 
+  void _calculateSourcePosition() {
+    if (enablePopoverEffect) {
+      if (popoverPosition != null) {
+        // Prioritize popoverPosition parameter for the popover position
+        _sourcePosition = popoverPosition;
+        _sourceSize = .zero;
+      } else if (sourceContext.mounted) {
+        // Capture source position once if popover effect is enabled
+        final RenderBox? renderBox = sourceContext.findRenderObject() as RenderBox?;
+        if (renderBox != null) {
+          _sourcePosition = renderBox.localToGlobal(Offset.zero);
+          _sourceSize = renderBox.size;
+        }
+      }
+    }
+  }
+
   @override
   TickerFuture didPush() {
     super.didPush(); // ✅ DEVI chiamarlo - notifica solo il framework, non avvia animazioni
 
-    // Capture source position once if popover effect is enabled
-    if (enablePopoverEffect && sourceContext != null) {
-      final RenderBox? renderBox = sourceContext!.findRenderObject() as RenderBox?;
-      if (renderBox != null) {
-        _sourcePosition = renderBox.localToGlobal(Offset.zero);
-        _sourceSize = renderBox.size;
-      }
-      // Clear reference after capture to prevent memory leak
-      sourceContext = null;
-    }
+    _calculateSourcePosition();
 
     _width = width;
 
@@ -330,6 +337,8 @@ class CustomBottomSheetRoute<T> extends ModalRoute<T> {
   void _calculatePopoverPosition(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
 
+    _calculateSourcePosition();
+
     // Use cached source position and size
     if (_sourcePosition == null || _sourceSize == null) return;
 
@@ -367,10 +376,12 @@ class CustomBottomSheetRoute<T> extends ModalRoute<T> {
       context: context,
       removeTop: true,
       child: Padding(
-        padding: const EdgeInsets.only(
+        padding: EdgeInsets.only(
           left: BottomSheetConfig.edgePadding,
           right: BottomSheetConfig.edgePadding,
-          bottom: BottomSheetConfig.edgePadding,
+          bottom: screenCornerRadius > BottomSheetConfig.edgePadding || enablePopoverEffect
+              ? BottomSheetConfig.edgePadding
+              : 0,
         ),
         child: ConstrainedBox(
           constraints: BoxConstraints(maxWidth: _width ?? BottomSheetConfig.maxWidth),
@@ -541,12 +552,12 @@ CustomBottomSheetController showLiquiModal({
   bool enablePopoverEffect = false,
   double? width,
   double? borderRadius,
-  BuildContext? sourceContext,
+  Offset? popoverPosition,
 }) {
   final controller = CustomBottomSheetController();
 
   // Get screen corner radius asynchronously
-  ScreenCornerRadius.get().then((corner) {
+  ScreenCornerRadiusCache.get().then((corner) {
     if (!context.mounted) return;
 
     final route = CustomBottomSheetRoute(
@@ -556,12 +567,11 @@ CustomBottomSheetController showLiquiModal({
       enableDrag: enableDrag,
       screenCornerRadius:
           borderRadius ??
-          (corner != null
-              ? corner.bottomLeft - BottomSheetConfig.cornerRadiusAdjustment
-              : BottomSheetConfig.progressMin),
+          (corner != null ? max(0, corner - BottomSheetConfig.edgePadding) : BottomSheetConfig.progressMin),
       sheetController: controller,
       enablePopoverEffect: enablePopoverEffect,
-      sourceContext: sourceContext,
+      sourceContext: context,
+      popoverPosition: popoverPosition,
       width: width,
     );
 
@@ -592,13 +602,13 @@ CustomBottomSheetController showLiquiModal({
 /// ```
 CustomBottomSheetController showLiquiPopover({
   required BuildContext context,
-  required BuildContext sourceContext,
   required Widget child,
   Color? backgroundColor,
   Color? barrierColor,
   double? width,
   double? borderRadius,
   bool useRootNavigator = false,
+  Offset? position,
 }) {
   return showLiquiModal(
     context: context,
@@ -608,9 +618,9 @@ CustomBottomSheetController showLiquiPopover({
     enableDrag: false,
     useRootNavigator: useRootNavigator,
     enablePopoverEffect: true,
-    sourceContext: sourceContext,
     width: width,
     borderRadius: borderRadius,
+    popoverPosition: position,
   );
 }
 
@@ -683,21 +693,21 @@ CustomBottomSheetController showLiquiSheet({
 /// ```
 CustomBottomSheetController showLiquiMenu({
   required BuildContext context,
-  required BuildContext sourceContext,
   required List<LiquiMenuItem> items,
   Color? backgroundColor,
   Color? barrierColor,
   double? width,
   bool useRootNavigator = false,
+  Offset? position,
 }) {
   return showLiquiPopover(
     context: context,
-    sourceContext: sourceContext,
     backgroundColor: backgroundColor ?? Colors.white.withAlpha(200),
     barrierColor: barrierColor,
     width: width ?? 238,
     borderRadius: 20,
     useRootNavigator: useRootNavigator,
+    position: position,
     child: SizedBox(
       width: double.maxFinite,
       child: Padding(

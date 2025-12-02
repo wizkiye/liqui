@@ -2,7 +2,7 @@
 
 iOS-styled liquid sheets and buttons for Flutter with elegant spring animations.
 
-[![pub package](https://img.shields.io/badge/pub-0.1.0-blue)](https://pub.dev/packages/liqui)
+[![pub package](https://img.shields.io/badge/pub-0.2.1-blue)](https://pub.dev/packages/liqui)
 
 ![Demo](assets/demo.gif)
 
@@ -21,7 +21,7 @@ Add to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  liqui: ^0.1.0
+  liqui: ^0.2.1
 ```
 
 ## Usage
@@ -51,8 +51,17 @@ Display a popover menu anchored to a button or widget:
 ```dart
 showLiquiPopover(
   context: context,
-  sourceContext: buttonContext, // Context of the button that triggered the popover
   child: YourCustomWidget(),
+);
+```
+
+Or override the anchor position manually:
+
+```dart
+showLiquiPopover(
+  context: context,
+  child: YourCustomWidget(),
+  position: Offset(100, 200), // Custom anchor position
 );
 ```
 
@@ -63,7 +72,6 @@ Show a list of menu items with interactive highlighting:
 ```dart
 showLiquiMenu(
   context: context,
-  sourceContext: buttonContext,
   items: [
     LiquiMenuItem(
       title: 'Edit',
@@ -199,12 +207,12 @@ showLiquiSheet(
 ```dart
 showLiquiPopover(
   context: context,
-  sourceContext: buttonContext,
   child: YourWidget(),
   backgroundColor: Colors.white,
   barrierColor: Colors.transparent,
   width: 300,
   borderRadius: 20,
+  position: Offset(100, 200), // Optional: Custom anchor position
 );
 ```
 

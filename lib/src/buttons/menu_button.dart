@@ -74,12 +74,11 @@ class LiquiMenuButton extends StatefulWidget {
 class _LiquiMenuButtonState extends State<LiquiMenuButton> {
   CustomBottomSheetController? _menuController;
 
-  void _showMenu(BuildContext buttonContext) {
+  void _showMenu() {
     widget.onMenuOpened?.call();
 
     _menuController = showLiquiMenu(
       context: context,
-      sourceContext: buttonContext,
       items: widget.items,
       backgroundColor: widget.backgroundColor,
       barrierColor: widget.barrierColor ?? Colors.transparent,
@@ -94,11 +93,7 @@ class _LiquiMenuButtonState extends State<LiquiMenuButton> {
 
   @override
   Widget build(BuildContext context) {
-    return Builder(
-      builder: (buttonContext) {
-        return widget.builder(buttonContext, () => _showMenu(buttonContext));
-      },
-    );
+    return widget.builder(context, () => _showMenu());
   }
 
   @override

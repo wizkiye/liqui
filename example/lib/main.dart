@@ -76,8 +76,7 @@ class _LiquiShowcasePageState extends State<LiquiShowcasePage> {
 
   void _showPopover(BuildContext sourceContext) {
     showLiquiPopover(
-      context: context,
-      sourceContext: sourceContext,
+      context: sourceContext,
       backgroundColor: Colors.white.withAlpha(240),
       width: 320,
       child: _buildSheetContent(context),
@@ -142,8 +141,7 @@ class _LiquiShowcasePageState extends State<LiquiShowcasePage> {
                               icon: CupertinoIcons.settings,
                               onPressed: () {
                                 showLiquiMenu(
-                                  context: context,
-                                  sourceContext: settingsContext,
+                                  context: settingsContext,
                                   barrierColor: Colors.transparent,
                                   items: [
                                     LiquiMenuItem(
@@ -171,8 +169,7 @@ class _LiquiShowcasePageState extends State<LiquiShowcasePage> {
                               icon: CupertinoIcons.ellipsis,
                               onPressed: () {
                                 showLiquiMenu(
-                                  context: context,
-                                  sourceContext: settingsContext,
+                                  context: settingsContext,
                                   barrierColor: Colors.transparent,
                                   items: [
                                     LiquiMenuItem(title: 'Edit', icon: CupertinoIcons.pencil, onTap: () {}),

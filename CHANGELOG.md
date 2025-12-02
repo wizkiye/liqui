@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.1] - 2025-12-03
+
+### Added
+- `position` parameter to `showLiquiPopover()` and `showLiquiMenu()` for manually overriding popover anchor position
+- Screen corner radius caching to prevent repeated plugin calls
+
+### Fixed
+- Screen corner radius `MissingPluginImplementation` exception ([#1](https://github.com/manudicri/liqui/issues/1))
+- Bottom sheet border radius now properly handles edge cases with screen corner radius
+
+### Changed
+- Removed `sourceContext` parameter from `showLiquiPopover()` and `showLiquiMenu()` - now uses `context` directly
+- `LiquiMenuButton` simplified to remove unnecessary `Builder` wrapper
+- Improved bottom sheet corner radius calculation
+
+### Removed
+- Legacy build artifacts and temporary files cleanup
+
 ## [0.2.0] - 2025-12-02
 
 ### Added
