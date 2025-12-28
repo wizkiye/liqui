@@ -13,10 +13,12 @@ class LiquiMenuItem {
   final String? imageAsset;
   final bool destructive;
   final bool selected;
+  final TextStyle? textStyle;
 
   const LiquiMenuItem({
     required this.onTap,
     required this.title,
+    this.textStyle,
     this.icon,
     this.destructive = false,
     this.selected = false,
@@ -73,7 +75,9 @@ class _LiquiMenuOptionGroupState extends State<LiquiMenuOptionGroup> {
     if (box != null) {
       final stackBox = context.findRenderObject() as RenderBox?;
       if (stackBox != null) {
-        final boxPositionInStack = stackBox.globalToLocal(box.localToGlobal(Offset.zero));
+        final boxPositionInStack = stackBox.globalToLocal(
+          box.localToGlobal(Offset.zero),
+        );
         highlightedRect.value = boxPositionInStack & box.size;
       }
     }
@@ -151,8 +155,12 @@ class _LiquiMenuOptionGroupState extends State<LiquiMenuOptionGroup> {
                   duration: Durations.long1,
                   curve: Curves.fastLinearToSlowEaseIn,
                   decoration: ShapeDecoration(
-                    color: highlightedIndex != null ? Colors.black.withAlpha(20) : Colors.black.withAlpha(0),
-                    shape: RoundedSuperellipseBorder(borderRadius: .circular(20)),
+                    color: highlightedIndex != null
+                        ? Colors.black.withAlpha(20)
+                        : Colors.black.withAlpha(0),
+                    shape: RoundedSuperellipseBorder(
+                      borderRadius: .circular(20),
+                    ),
                   ),
                 ),
               );
@@ -167,6 +175,7 @@ class _LiquiMenuOptionGroupState extends State<LiquiMenuOptionGroup> {
                   child: LiquiMenuOption(
                     icon: items[i].icon,
                     text: items[i].title,
+                    textStyle: items[i].textStyle,
                     selected: items[i].selected,
                     destructive: items[i].destructive,
                     grouped: true,
@@ -187,6 +196,7 @@ class LiquiMenuOption extends StatelessWidget {
     super.key,
     this.icon,
     required this.text,
+    this.textStyle,
     this.destructive = false,
     this.selected = false,
     this.grouped = false,
@@ -196,6 +206,7 @@ class LiquiMenuOption extends StatelessWidget {
 
   final IconData? icon;
   final String text;
+  final TextStyle? textStyle;
   final bool destructive;
   final bool selected;
   final bool grouped;
@@ -218,7 +229,13 @@ class LiquiMenuOption extends StatelessWidget {
                   height: 18,
                   color: destructive ? CupertinoColors.destructiveRed : null,
                 )
-              : Icon(icon, size: 15, color: destructive ? CupertinoColors.destructiveRed : CupertinoColors.label),
+              : Icon(
+                  icon,
+                  size: 15,
+                  color: destructive
+                      ? CupertinoColors.destructiveRed
+                      : CupertinoColors.label,
+                ),
         ),
       );
     }
@@ -243,18 +260,30 @@ class LiquiMenuOption extends StatelessWidget {
             ),
             const SizedBox(width: 4),
           ],
-          if (iconAlignment == LiquiMenuIconAlignment.left) ...[iconWidget, const SizedBox(width: 8)],
+          if (iconAlignment == LiquiMenuIconAlignment.left) ...[
+            iconWidget,
+            const SizedBox(width: 8),
+          ],
           Expanded(
             child: Text(
               text,
-              style: TextStyle(
-                fontSize: 15,
-                height: 1.25,
-                color: destructive ? CupertinoColors.destructiveRed : Colors.black,
-              ),
+              style:
+                  (textStyle?.copyWith(
+                    color: destructive ? CupertinoColors.destructiveRed : null,
+                  )) ??
+                  TextStyle(
+                    fontSize: 15,
+                    height: 1.25,
+                    color: destructive
+                        ? CupertinoColors.destructiveRed
+                        : Colors.black,
+                  ),
             ),
           ),
-          if (iconAlignment == LiquiMenuIconAlignment.right) ...[const SizedBox(width: 8), iconWidget],
+          if (iconAlignment == LiquiMenuIconAlignment.right) ...[
+            const SizedBox(width: 8),
+            iconWidget,
+          ],
         ],
       ),
     );
