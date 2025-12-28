@@ -197,6 +197,7 @@ class LiquiMenuOption extends StatelessWidget {
     this.icon,
     required this.text,
     this.textStyle,
+    this.iconColor,
     this.destructive = false,
     this.selected = false,
     this.grouped = false,
@@ -205,6 +206,7 @@ class LiquiMenuOption extends StatelessWidget {
   });
 
   final IconData? icon;
+  final Color? iconColor;
   final String text;
   final TextStyle? textStyle;
   final bool destructive;
@@ -234,7 +236,7 @@ class LiquiMenuOption extends StatelessWidget {
                   size: 15,
                   color: destructive
                       ? CupertinoColors.destructiveRed
-                      : CupertinoColors.label,
+                      : iconColor ?? CupertinoColors.label,
                 ),
         ),
       );
